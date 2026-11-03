@@ -15,6 +15,13 @@ python act_bb_remote_server.py \
   --dataset-root "/실제/dataset/pink_all" \
   --deployment pink_original \
   --listen tcp/0.0.0.0:7447
+
+
+# example
+
+python -u act_bb_remote/act_bb_remote_server.py   --checkpoint /home/rtx6000/sy_ws/seg_test/checkpoints/act_pink_mixed_30k/  --dataset-root /home/rtx6000/sy_ws/seg_test/dataset_meta/pink_original/   --deployment pink_bb   --device cuda   --listen tcp/0.0.0.0:7447
+
+
 ```
 
 ## original: 로봇 PC에서 클라이언트 실행
@@ -22,29 +29,24 @@ python act_bb_remote_server.py \
 GPU PC IP는 기존 192.168.0.41을 사용했습니다. 서버 준비 후 실행하세요.
 
 ```bash
-QT_QPA_PLATFORM=xcb python -u act_bb_remote_client.py \
+QT_QPA_PLATFORM=xcb python -u act_bb_remote_client_debug.py \
   --bb-mode original \
-  --bb-source-key left \
-  --inference.type=remote \
-  --inference.endpoint=tcp/192.168.0.41:7447 \
+  --inference.endpoint=tcp/192.168.0.3:7447 \
   --inference.deployment=pink_original \
-  --inference.semantics=rby1_left_joint_v1 \
-  --inference.mode=chunk \
   --inference.chunk_merge=aligned \
-  --inference.refill_seconds=0.5 \
-  --inference.encoding=raw \
-  --fps=30 \
+  --inference.blend_steps=5 \
+  --inference.blend_weight=0.5 \
+  --inference.blend_components='["left_arm_0.pos","left_arm_1.pos","left_arm_2.pos","left_arm_3.pos","left_arm_4.pos","left_arm_5.pos","left_arm_6.pos"]' \
+  --inference.semantics=rby1_left_joint_v1 \
   --robot.type=rby1 \
   --robot.address=192.168.30.1:50051 \
-  --robot.model=m \
   --robot.action_mode=joint \
   --robot.use_left_arm=true \
   --robot.use_right_arm=false \
   --robot.use_torso=false \
   --robot.use_mobile_base=false \
   --robot.use_gripper=true \
-  --robot.use_velocity=false \
-  --robot.use_torque=false
+  --robot.use_impedance=true
 ```
 
 ## bbox: GPU PC에서 서버 실행
@@ -64,32 +66,24 @@ python act_bb_remote_server.py \
 GPU PC IP는 기존 192.168.0.41을 사용했습니다. 서버 준비 후 실행하세요.
 
 ```bash
-QT_QPA_PLATFORM=xcb python -u act_bb_remote_client.py \
+QT_QPA_PLATFORM=xcb python -u act_bb_remote_client_debug.py \
   --bb-mode bbox \
-  --bb-source-key left \
-  --bb-score-threshold 0.65 \
-  --bb-score-margin 0.01 \
-  --bb-target-missing-frames 5 \
-  --inference.type=remote \
-  --inference.endpoint=tcp/192.168.0.41:7447 \
+  --inference.endpoint=tcp/192.168.0.3:7447 \
   --inference.deployment=pink_bbox \
-  --inference.semantics=rby1_left_joint_v1 \
-  --inference.mode=chunk \
   --inference.chunk_merge=aligned \
-  --inference.refill_seconds=0.5 \
-  --inference.encoding=raw \
-  --fps=30 \
+  --inference.blend_steps=5 \
+  --inference.blend_weight=0.5 \
+  --inference.blend_components='["left_arm_0.pos","left_arm_1.pos","left_arm_2.pos","left_arm_3.pos","left_arm_4.pos","left_arm_5.pos","left_arm_6.pos"]' \
+  --inference.semantics=rby1_left_joint_v1 \
   --robot.type=rby1 \
   --robot.address=192.168.30.1:50051 \
-  --robot.model=m \
   --robot.action_mode=joint \
   --robot.use_left_arm=true \
   --robot.use_right_arm=false \
   --robot.use_torso=false \
   --robot.use_mobile_base=false \
   --robot.use_gripper=true \
-  --robot.use_velocity=false \
-  --robot.use_torque=false
+  --robot.use_impedance=true
 ```
 
 ## 사용법
